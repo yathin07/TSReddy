@@ -56,10 +56,10 @@ export default function VideoPage() {
   ]
 
   const videoEmbeds: Record<string, string> = {
-    Telugu: "https://www.youtube.com/embed/OeLxh0h8s5s?autoplay=1",
-    Tamil: "https://www.youtube.com/embed/9l_hcnVvsng?autoplay=1",
-    Hindi: "https://www.youtube.com/embed/wq16qCEqk9E?autoplay=1",
-    English: "https://www.youtube.com/embed/rS6tlsAI6fk?autoplay=1",
+    Telugu: "https://www.youtube.com/embed/0jKeLVFi00k",
+    Tamil: "https://www.youtube.com/embed/WCtslzTrHO0",
+    Hindi: "https://www.youtube.com/embed/V0HZdfx5PSI",
+    English: "https://www.youtube.com/embed/cQWFCuorBk0",
   }
 
   if (showWelcome) {

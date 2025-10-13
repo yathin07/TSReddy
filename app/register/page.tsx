@@ -115,7 +115,7 @@ export default function RegisterPage() {
             <Card className="shadow-2xl border-2 border-border bg-gradient-to-br from-card to-card/80 backdrop-blur-sm">
               <CardHeader className="text-center pb-8">
                 <CardTitle className="text-2xl font-bold font-serif">Registration Form</CardTitle>
-                <p className="text-muted-foreground">Fill in your details to access exclusive content</p>
+                <p className="text-muted-foreground">Fill-in your details to access exclusive content</p>
               </CardHeader>
               <CardContent className="px-8 pb-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
