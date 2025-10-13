@@ -22,7 +22,7 @@ export default function LandingPage() {
 
   const shortEmbeds: Record<string, string> = {
     Telugu: "https://www.youtube.com/embed/mE__snk_6Sg",
-    Tamil: "https://www.youtube.com/embed/5Ku98Diz8Uk",
+    Tamil: "https://www.youtube.com/embed/HK8dU1apRCw",
     Hindi: "https://www.youtube.com/embed/csB901pkwTo",
     English: "https://www.youtube.com/embed/u7nbqeFkzHY",
   }
