@@ -1,12 +1,15 @@
 "use client"
-import Tsreddy from "@/public/public/sudhakar-reddy-photo.png"
+
+import Image from "next/image"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Logo } from "@/components/logo"
 import { AnimatedBackground } from "@/components/animated-background"
 import { Star, Play, Loader2 } from "lucide-react"
-import Image from "next/image"
+
+// ✅ FIXED: correct image import path (remove duplicate `public`)
+import Tsreddy from "@/public/sudhakar-reddy-photo.png"
 
 export default function LandingPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("Telugu")
@@ -66,26 +69,28 @@ export default function LandingPage() {
   ]
 
   const extraTestimonials = [
-  { 
-    name: "Mr. T. Chaitanya Kumar", 
-    role: "Mobile Service Center", 
-    content: "I was running a small mobile service center. I decided to work with Sudhakar Reddy sir and achieved an income of 1 lakh+ per month.", 
-    rating: 5 
-  },
-  { 
-    name: "Mr. Shaiksha Vali", 
-    role: "13k Salaried Employee", 
-    content: "I was working as a 13k salaried employee in the private sector, Kurnool. Through this opportunity, I’m now earning over 1 lakh per month. Thanks to Sudhakar Reddy sir!", 
-    rating: 5 
-  },
-  { 
-    name: "Mr. Dharbar Vali", 
-    role: "Bus Conductor", 
-    content: "Earning 1 lakh+ every month through this part-time opportunity while working as a bus conductor.", 
-    rating: 4 
-  }
-]
-
+    {
+      name: "Mr. T. Chaitanya Kumar",
+      role: "Mobile Service Center",
+      content:
+        "I was running a small mobile service center. I decided to work with Sudhakar Reddy sir and achieved an income of 1 lakh+ per month.",
+      rating: 5,
+    },
+    {
+      name: "Mr. Shaiksha Vali",
+      role: "13k Salaried Employee",
+      content:
+        "I was working as a 13k salaried employee in the private sector, Kurnool. Through this opportunity, I’m now earning over 1 lakh per month. Thanks to Sudhakar Reddy sir!",
+      rating: 5,
+    },
+    {
+      name: "Mr. Dharbar Vali",
+      role: "Bus Conductor",
+      content:
+        "Earning 1 lakh+ every month through this part-time opportunity while working as a bus conductor.",
+      rating: 4,
+    },
+  ]
 
   const allTestimonials = [...testimonials, ...extraTestimonials]
   const loopedTestimonials = [...allTestimonials, ...allTestimonials]
@@ -107,7 +112,6 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background overflow-hidden relative">
       <AnimatedBackground />
-
       <div className="relative z-10">
         <Logo />
 
@@ -120,7 +124,6 @@ export default function LandingPage() {
                   Transform Your Future Today
                 </span>
               </div>
-
               <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 font-serif leading-[1.1]">
                 Your future begins the moment you decide—
                 <span className="block text-primary relative">
@@ -128,19 +131,17 @@ export default function LandingPage() {
                   <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-primary to-accent rounded-full opacity-30" />
                 </span>
               </h1>
-
               <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto leading-relaxed">
                 Join thousands of achievers who transformed their lives with proven strategies from T. Sudhakar Reddy.
               </p>
             </div>
 
-            {/* LANGUAGE SELECTOR & VIDEO */}
+            {/* Language Selector */}
             <div className="w-full max-w-5xl">
               <div className="mb-4">
                 <h3 className="text-lg md:text-xl font-bold text-foreground">Choose Your Language</h3>
                 <p className="text-muted-foreground text-sm">Experience the intro in your preferred language</p>
               </div>
-
               <div className="flex flex-wrap justify-center gap-3 mb-6">
                 {languages.map((lang) => (
                   <button
@@ -159,6 +160,7 @@ export default function LandingPage() {
                 ))}
               </div>
 
+              {/* Video */}
               <div className="relative w-full overflow-hidden rounded-2xl border border-border shadow-lg">
                 {isLanguageLoading ? (
                   <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
@@ -193,18 +195,69 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* REGISTER BUTTON SECTION */}
+        {/* ABOUT SECTION */}
+        <section className="relative py-24 px-4 overflow-hidden bg-gradient-to-b from-blue-50/30 to-background">
+          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center relative z-10">
+            <div className="relative flex justify-center">
+              <Image
+                src={Tsreddy}
+                alt="T. Sudhakar Reddy"
+                width={400}
+                height={600}
+                className="rounded-2xl shadow-2xl object-cover w-full h-[500px] md:h-[900px]"
+              />
+              <div className="absolute bottom-5 bg-primary text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg">
+                15+ Years Experience
+              </div>
+            </div>
+            <div>
+              <h2 className="text-4xl font-bold text-foreground mb-6 font-serif">
+                About Your Host, T. Sudhakar Reddy
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+                T. Sudhakar Reddy is a renowned multi-millionaire entrepreneur and business coach who has helped thousands of individuals transform their lives through his proven business strategies and wealth-building methods.
+                <br />
+                <br />
+                With decades of experience in building successful businesses, Sudhakar Reddy has developed a blueprint for financial freedom that works for ordinary people from all walks of life.
+              </p>
+              <div className="flex flex-wrap gap-3 mb-8">
+                {[
+                  "Successful Business Owner",
+                  "Award-Winning Mentor",
+                  "10,000+ Achievers",
+                  "Created 100+ Millionaires",
+                ].map((item) => (
+                  <span
+                    key={item}
+                    className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full font-semibold text-sm border border-blue-300 shadow-sm"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+              <div className="bg-blue-600 text-white rounded-2xl p-6 shadow-xl">
+                <h3 className="text-xl font-semibold mb-2">Why Learn From Sudhakar Reddy?</h3>
+                <p className="italic text-base">
+                  "I've built multiple successful business owners and helped hundreds of ordinary people achieve extraordinary results. My methods are practical, ethical, and designed for the needy who want real results."
+                </p>
+                <p className="mt-3 font-bold">– T. Sudhakar Reddy</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* REGISTER BUTTON */}
         <section className="py-20 px-4 bg-background flex justify-center">
           <Button
             onClick={scrollToRegistration}
             size="lg"
-            className="bg-gradient-to-r from-primary to-accent text-white font-bold text-xl px-35 py-12 rounded-2xl shadow-2xl hover:scale-105 transition-transform duration-300"
+            className="bg-gradient-to-r from-primary to-accent text-white font-bold text-xl px-12 py-6 rounded-2xl shadow-2xl hover:scale-105 transition-transform duration-300"
           >
             Register Now
           </Button>
         </section>
 
-        {/* SUCCESS STORIES SECTION */}
+        {/* TESTIMONIALS */}
         <section className="py-32 px-4 bg-background overflow-hidden">
           <div className="max-w-7xl mx-auto relative">
             <div className="text-center mb-20">
@@ -213,23 +266,25 @@ export default function LandingPage() {
                   Real Success Stories
                 </span>
               </div>
-              <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-8 font-serif">Success Stories</h2>
+              <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-8 font-serif">
+                Success Stories
+              </h2>
               <p className="text-2xl text-muted-foreground italic max-w-4xl mx-auto leading-relaxed">
                 Real words from real people thanking Mr. T. Sudhakar Reddy for this life-changing opportunity.
               </p>
             </div>
 
             <div className="relative w-full overflow-hidden">
-              <div className="flex gap-6 animate-infinite-scroll">
+              <div className="flex gap-12 animate-scroll">
                 {loopedTestimonials.map((t, i) => (
                   <Card
                     key={i}
-                    className="min-w-[320px] max-w-[320px] flex-shrink-0 shadow-2xl hover:shadow-3xl transition-all duration-700 transform hover:-translate-y-2 group bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-2 border-border hover:border-primary/30"
+                    className="flex-shrink-0 w-80 shadow-2xl hover:shadow-3xl transition-all duration-700 transform hover:-translate-y-2 hover:rotate-1 group bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-2 border-border hover:border-primary/30"
                   >
                     <CardContent className="p-6 relative overflow-hidden">
                       <div className="flex mb-4 justify-center">
-                        {[...Array(t.rating)].map((_, i) => (
-                          <Star key={i} className="w-5 h-5 fill-accent text-accent" />
+                        {[...Array(t.rating)].map((_, starIndex) => (
+                          <Star key={starIndex} className="w-5 h-5 fill-accent text-accent" />
                         ))}
                       </div>
                       <p className="text-muted-foreground mb-4 leading-relaxed relative z-10 text-base italic">
@@ -251,15 +306,19 @@ export default function LandingPage() {
         </section>
       </div>
 
+      {/* SCROLL ANIMATION STYLE */}
       <style jsx>{`
-        @keyframes infinite-scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
         }
-        .animate-infinite-scroll {
+        .animate-scroll {
           display: flex;
-          width: max-content;
-          animation: infinite-scroll 60s linear infinite;
+          animation: scroll 25s linear infinite;
         }
       `}</style>
     </div>
