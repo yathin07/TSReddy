@@ -8,7 +8,6 @@ import { Logo } from "@/components/logo"
 import { AnimatedBackground } from "@/components/animated-background"
 import { Star, Play, Loader2 } from "lucide-react"
 
-// ✅ FIXED: correct image import path (remove duplicate `public`)
 import Tsreddy from "@/public/sudhakar-reddy-photo.png"
 
 export default function LandingPage() {
