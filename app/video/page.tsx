@@ -16,9 +16,12 @@ export default function VideoPage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [player, setPlayer] = useState<any>(null)
   const [wakeLock, setWakeLock] = useState<any>(null)
-  const router = useRouter()
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const [maxTime, setMaxTime] = useState(0) // maximum watched time
   const playerRef = useRef<HTMLDivElement>(null)
-  const lastTimeRef = useRef<number>(0)
+  const progressRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   const languages = [
     { code: "Telugu", name: "తెలుగు", flag: "🇮🇳" },
@@ -51,7 +54,7 @@ export default function VideoPage() {
     }
   }, [])
 
-  // Load YouTube API
+  // Load YouTube API and init player
   useEffect(() => {
     if (!isPlaying || !playerRef.current) return
     if ((window as any).YT) {
@@ -70,52 +73,40 @@ export default function VideoPage() {
       videoId: videoEmbeds[selectedLanguage],
       playerVars: {
         autoplay: 1,
-        controls: 1,
+        controls: 0, // hide native controls
         modestbranding: 1,
         rel: 0,
-        disablekb: 1, // disable keyboard seeking
-        fs: 0, // disable fullscreen button
+        disablekb: 1,
       },
       events: {
         onReady: (event: any) => {
           event.target.playVideo()
-          lastTimeRef.current = 0
+          setDuration(event.target.getDuration())
+          setMaxTime(0)
           requestWakeLock()
-        },
-        onStateChange: (event: any) => {
-          if (event.data === (window as any).YT.PlayerState.PLAYING) {
-            monitorSeek(event.target)
-          }
+          monitorTime(event.target)
         },
       },
     })
     setPlayer(newPlayer)
   }
 
-  // Monitor for forward seeking
-  const monitorSeek = (ytPlayer: any) => {
+  const monitorTime = (ytPlayer: any) => {
     const interval = setInterval(() => {
-      const current = ytPlayer.getCurrentTime()
-      if (current < lastTimeRef.current) {
-        lastTimeRef.current = current
-      } else if (current > lastTimeRef.current + 0.5) {
-        ytPlayer.seekTo(lastTimeRef.current, true)
-      } else {
-        lastTimeRef.current = current
-      }
+      const t = ytPlayer.getCurrentTime()
+      if (t > maxTime) setMaxTime(t) // track max watched time
+      setCurrentTime(t)
     }, 500)
-    ytPlayer.interval = interval
+    ytPlayer.monitorInterval = interval
   }
 
-  const requestWakeLock = async () => {
-    try {
-      if ("wakeLock" in navigator) {
-        const lock = await (navigator as any).wakeLock.request("screen")
-        setWakeLock(lock)
-        lock.addEventListener("release", () => console.log("Wake Lock released"))
-      }
-    } catch (err) {
-      console.error("Wake Lock failed", err)
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (!progressRef.current || !player) return
+    const rect = progressRef.current.getBoundingClientRect()
+    const clickPos = e.clientX - rect.left
+    const clickTime = (clickPos / rect.width) * duration
+    if (clickTime <= maxTime) {
+      player.seekTo(clickTime, true)
     }
   }
 
@@ -132,6 +123,18 @@ export default function VideoPage() {
     }
     window.addEventListener("focus", onFocus)
     setTimeout(() => setIsJoining(false), 2000)
+  }
+
+  const requestWakeLock = async () => {
+    try {
+      if ("wakeLock" in navigator) {
+        const lock = await (navigator as any).wakeLock.request("screen")
+        setWakeLock(lock)
+        lock.addEventListener("release", () => console.log("Wake Lock released"))
+      }
+    } catch (err) {
+      console.error("Wake Lock failed", err)
+    }
   }
 
   if (showWelcome) {
@@ -180,6 +183,8 @@ export default function VideoPage() {
                       if (player) {
                         player.destroy()
                         setPlayer(null)
+                        setCurrentTime(0)
+                        setMaxTime(0)
                       }
                     }}
                     className={`px-5 py-3 rounded-xl text-sm font-semibold border transition-all ${
@@ -217,7 +222,27 @@ export default function VideoPage() {
                       </button>
                     </div>
                   ) : (
-                    <div ref={playerRef} className="absolute inset-0 w-full h-full" />
+                    <>
+                      <div ref={playerRef} className="absolute inset-0 w-full h-full" />
+                      {/* Custom progress bar */}
+                      <div
+                        ref={progressRef}
+                        onClick={handleProgressClick}
+                        className="absolute bottom-4 left-0 w-full h-3 bg-gray-700/50 cursor-pointer rounded"
+                      >
+                        <div
+                          className="h-3 bg-red-500 rounded"
+                          style={{ width: `${(currentTime / duration) * 100}%` }}
+                        />
+                        <div
+                          className="absolute top-0 right-0 h-3 w-1 bg-white opacity-50 cursor-not-allowed"
+                          style={{
+                            left: `${(maxTime / duration) * 100}%`,
+                          }}
+                          title="Forward seeking disabled"
+                        />
+                      </div>
+                    </>
                   )}
                 </div>
               </CardContent>
