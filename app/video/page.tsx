@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Logo } from "@/components/logo"
@@ -14,7 +14,25 @@ export default function VideoPage() {
   const [showScrollHint, setShowScrollHint] = useState(true)
   const [selectedLanguage, setSelectedLanguage] = useState("Telugu")
   const [isPlaying, setIsPlaying] = useState(false)
+  const [player, setPlayer] = useState<any>(null)
+  const [wakeLock, setWakeLock] = useState<any>(null)
   const router = useRouter()
+  const playerRef = useRef<HTMLDivElement>(null)
+  const lastTimeRef = useRef<number>(0)
+
+  const languages = [
+    { code: "Telugu", name: "తెలుగు", flag: "🇮🇳" },
+    { code: "Tamil", name: "தமிழ்", flag: "🇮🇳" },
+    { code: "Hindi", name: "हिंदी", flag: "🇮🇳" },
+    { code: "English", name: "English", flag: "🇺🇸" },
+  ]
+
+  const videoEmbeds: Record<string, string> = {
+    Telugu: "0jKeLVFi00k",
+    Tamil: "WCtslzTrHO0",
+    Hindi: "V0HZdfx5PSI",
+    English: "cQWFCuorBk0",
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => setShowWelcome(false), 1200)
@@ -33,6 +51,74 @@ export default function VideoPage() {
     }
   }, [])
 
+  // Load YouTube API
+  useEffect(() => {
+    if (!isPlaying || !playerRef.current) return
+    if ((window as any).YT) {
+      initPlayer()
+    } else {
+      const tag = document.createElement("script")
+      tag.src = "https://www.youtube.com/iframe_api"
+      document.body.appendChild(tag)
+      ;(window as any).onYouTubeIframeAPIReady = initPlayer
+    }
+  }, [isPlaying, selectedLanguage])
+
+  const initPlayer = () => {
+    if (!playerRef.current) return
+    const newPlayer = new (window as any).YT.Player(playerRef.current, {
+      videoId: videoEmbeds[selectedLanguage],
+      playerVars: {
+        autoplay: 1,
+        controls: 1,
+        modestbranding: 1,
+        rel: 0,
+        disablekb: 1, // disable keyboard seeking
+        fs: 0, // disable fullscreen button
+      },
+      events: {
+        onReady: (event: any) => {
+          event.target.playVideo()
+          lastTimeRef.current = 0
+          requestWakeLock()
+        },
+        onStateChange: (event: any) => {
+          if (event.data === (window as any).YT.PlayerState.PLAYING) {
+            monitorSeek(event.target)
+          }
+        },
+      },
+    })
+    setPlayer(newPlayer)
+  }
+
+  // Monitor for forward seeking
+  const monitorSeek = (ytPlayer: any) => {
+    const interval = setInterval(() => {
+      const current = ytPlayer.getCurrentTime()
+      if (current < lastTimeRef.current) {
+        lastTimeRef.current = current
+      } else if (current > lastTimeRef.current + 0.5) {
+        ytPlayer.seekTo(lastTimeRef.current, true)
+      } else {
+        lastTimeRef.current = current
+      }
+    }, 500)
+    ytPlayer.interval = interval
+  }
+
+  const requestWakeLock = async () => {
+    try {
+      if ("wakeLock" in navigator) {
+        const lock = await (navigator as any).wakeLock.request("screen")
+        setWakeLock(lock)
+        lock.addEventListener("release", () => console.log("Wake Lock released"))
+      }
+    } catch (err) {
+      console.error("Wake Lock failed", err)
+    }
+  }
+
   const handleJoinNow = () => {
     setIsJoining(true)
     window.open(
@@ -46,20 +132,6 @@ export default function VideoPage() {
     }
     window.addEventListener("focus", onFocus)
     setTimeout(() => setIsJoining(false), 2000)
-  }
-
-  const languages = [
-    { code: "Telugu", name: "తెలుగు", flag: "🇮🇳" },
-    { code: "Tamil", name: "தமிழ்", flag: "🇮🇳" },
-    { code: "Hindi", name: "हिंदी", flag: "🇮🇳" },
-    { code: "English", name: "English", flag: "🇺🇸" },
-  ]
-
-  const videoEmbeds: Record<string, string> = {
-    Telugu: "https://www.youtube.com/embed/0jKeLVFi00k",
-    Tamil: "https://www.youtube.com/embed/WCtslzTrHO0",
-    Hindi: "https://www.youtube.com/embed/V0HZdfx5PSI",
-    English: "https://www.youtube.com/embed/cQWFCuorBk0",
   }
 
   if (showWelcome) {
@@ -104,7 +176,11 @@ export default function VideoPage() {
                     key={lang.code}
                     onClick={() => {
                       setSelectedLanguage(lang.code)
-                      setIsPlaying(false) // reset play when language changes
+                      setIsPlaying(false)
+                      if (player) {
+                        player.destroy()
+                        setPlayer(null)
+                      }
                     }}
                     className={`px-5 py-3 rounded-xl text-sm font-semibold border transition-all ${
                       selectedLanguage === lang.code
@@ -125,9 +201,7 @@ export default function VideoPage() {
                 <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black">
                   {!isPlaying ? (
                     <div className="absolute inset-0 flex items-center justify-center cursor-pointer group">
-                      {/* Dark overlay */}
                       <div className="absolute inset-0 bg-black opacity-60" />
-                      {/* Custom Play Button */}
                       <button
                         onClick={() => setIsPlaying(true)}
                         className="z-10 w-20 h-20 flex items-center justify-center bg-white bg-opacity-90 rounded-full shadow-lg group-hover:scale-110 transition transform"
@@ -143,15 +217,7 @@ export default function VideoPage() {
                       </button>
                     </div>
                   ) : (
-                    <iframe
-                      key={selectedLanguage}
-                      className="absolute inset-0 w-full h-full"
-                      src={videoEmbeds[selectedLanguage]}
-                      title={`${selectedLanguage} Training Video`}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allowFullScreen
-                    />
+                    <div ref={playerRef} className="absolute inset-0 w-full h-full" />
                   )}
                 </div>
               </CardContent>
