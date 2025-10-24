@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Logo } from "@/components/logo"
 import { AnimatedBackground } from "@/components/animated-background"
 import { Star, Play, Loader2 } from "lucide-react"
-
 import Tsreddy from "@/public/sudhakar-reddy-photo.png"
 
 export default function LandingPage() {
@@ -65,9 +64,6 @@ export default function LandingPage() {
         "Working as admin at prestigious hospital sector at Hyderabad, but this part time work made me Millionaire.",
       rating: 5,
     },
-  ]
-
-  const extraTestimonials = [
     {
       name: "Mr. T. Chaitanya Kumar",
       role: "Mobile Service Center",
@@ -91,8 +87,7 @@ export default function LandingPage() {
     },
   ]
 
-  const allTestimonials = [...testimonials, ...extraTestimonials]
-  const loopedTestimonials = [...allTestimonials, ...allTestimonials]
+  const loopedTestimonials = [...testimonials]
 
   const handleLanguageChange = (langCode: string) => {
     if (langCode === selectedLanguage) return
@@ -115,8 +110,8 @@ export default function LandingPage() {
         <Logo />
 
         {/* HERO SECTION */}
-        <section className="pt-24 md:pt-32 pb-16 md:pb-24 px-4 relative">
-          <div className="max-w-6xl mx-auto flex flex-col items-center text-center gap-10 md:gap-16">
+        <section className="pt-24 md:pt-10 pb-30 md:pb-24 px-4 relative">
+          <div className="max-w-6xl mx-auto flex flex-col items-center text-center gap-2 md:gap-2">
             <div className="max-w-3xl">
               <div className="inline-block mb-4">
                 <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent text-sm md:text-base font-semibold tracking-wide uppercase">
@@ -124,10 +119,10 @@ export default function LandingPage() {
                 </span>
               </div>
               <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 font-serif leading-[1.1]">
-                Your future begins the moment you decide—
+                Your future begins the moment you decide-
                 <span className="block text-primary relative">
                   don't wait, create it today.
-                  <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-primary to-accent rounded-full opacity-30" />
+                  <span className="absolute -bottom-4 left-0 right-0 h-2 bg-gradient-to-r from-primary to-accent rounded-full opacity-50" />
                 </span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto leading-relaxed">
@@ -250,13 +245,13 @@ export default function LandingPage() {
           <Button
             onClick={scrollToRegistration}
             size="lg"
-            className="bg-gradient-to-r from-primary to-accent text-white font-bold text-xl px-12 py-6 rounded-2xl shadow-2xl hover:scale-105 transition-transform duration-300"
+            className="bg-gradient-to-r from-primary to-accent text-white font-bold text-xl px-30 py-12 rounded-2x1 shadow-2xl hover:scale-105 transition-transform duration-300"
           >
             Register Now
           </Button>
         </section>
 
-        {/* TESTIMONIALS */}
+        {/* TESTIMONIALS (Perfect Continuous Loop) */}
         <section className="py-32 px-4 bg-background overflow-hidden">
           <div className="max-w-7xl mx-auto relative">
             <div className="text-center mb-20">
@@ -273,9 +268,10 @@ export default function LandingPage() {
               </p>
             </div>
 
+            {/* Continuous Loop */}
             <div className="relative w-full overflow-hidden">
-              <div className="flex gap-12 animate-scroll">
-                {loopedTestimonials.map((t, i) => (
+              <div className="flex gap-12 w-max animate-marquee">
+                {[...loopedTestimonials, ...loopedTestimonials].map((t, i) => (
                   <Card
                     key={i}
                     className="flex-shrink-0 w-80 shadow-2xl hover:shadow-3xl transition-all duration-700 transform hover:-translate-y-2 hover:rotate-1 group bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border-2 border-border hover:border-primary/30"
@@ -302,24 +298,30 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
+          {/* Continuous Marquee Animation */}
+          <style jsx>{`
+            @keyframes marquee {
+              0% {
+                transform: translateX(0);
+              }
+              100% {
+                transform: translateX(-50%);
+              }
+            }
+            .animate-marquee {
+              display: flex;
+              width: max-content;
+              animation: marquee 80s linear infinite;
+            }
+
+            @media (max-width: 768px) {
+              .animate-marquee {
+                animation-duration: 70s;
+              }
+            }
+          `}</style>
         </section>
       </div>
-
-      {/* SCROLL ANIMATION STYLE */}
-      <style jsx>{`
-        @keyframes scroll {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        .animate-scroll {
-          display: flex;
-          animation: scroll 25s linear infinite;
-        }
-      `}</style>
     </div>
   )
 }
