@@ -298,6 +298,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
+
           {/* Continuous Marquee Animation */}
           <style jsx>{`
             @keyframes marquee {
@@ -308,10 +309,16 @@ export default function LandingPage() {
                 transform: translateX(-50%);
               }
             }
+
             .animate-marquee {
               display: flex;
               width: max-content;
               animation: marquee 80s linear infinite;
+            }
+
+            /* 🟢 Pause the marquee on hover */
+            .animate-marquee:hover {
+              animation-play-state: paused;
             }
 
             @media (max-width: 768px) {
